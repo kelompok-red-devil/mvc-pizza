@@ -13,7 +13,7 @@ import view.Kasir;
  */
 public interface ControllerKasir {
     public void Simpan(Kasir kasir)throws SQLException;
-    public void Hapus(Kasir kasir)throws SQLException;
+    public void Batal(Kasir kasir)throws SQLException;
     public void Tampil(Kasir kasir)throws SQLException;
     public void KlikTable(Kasir kasir)throws SQLException;
 }
