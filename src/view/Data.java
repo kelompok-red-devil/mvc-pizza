@@ -4,17 +4,61 @@
  */
 package view;
 
+import java.awt.Component;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import model.ModelData;
+
 /**
  *
  * @author lotso
  */
 public class Data extends javax.swing.JFrame {
 
+    public DefaultTableModel tblmodel;
+    String header[] = {"Nama Pizza", "Harga Pizza"};
+    
     /**
      * Creates new form Data
      */
-    public Data() {
+    public Data() throws SQLException {
         initComponents();
+        tblmodel = new DefaultTableModel(null, header);
+        tbl.setModel(tblmodel);
+        tbl.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        model.Tampil(this);
+        setLebarKolom();
+    }
+    
+    public void setColumnWidth(int kolom) {
+        DefaultTableColumnModel dtcm = (DefaultTableColumnModel) tbl.getColumnModel();
+        TableColumn kolomtabel = dtcm.getColumn(kolom);
+        int lebar = 0, margin = 10, a;
+        TableCellRenderer renderer = kolomtabel.getHeaderRenderer();
+        if (renderer == null) {
+            renderer = tbl.getTableHeader().getDefaultRenderer();
+        }
+        Component komponen = renderer.getTableCellRendererComponent(tbl, kolomtabel.getHeaderRenderer(), false, false, 0, 0);
+        for (a = 0; a < tbl.getRowCount(); a++) {
+            komponen = renderer.getTableCellRendererComponent(tbl, tbl.getValueAt(a, kolom), false, false, a, kolom);
+            int lebarkolom = komponen.getPreferredSize().width;
+            lebar = Math.max(lebar, lebarkolom);
+        }
+        lebar = lebar + margin;
+        kolomtabel.setPreferredWidth(lebar);
+    }
+
+    public void setLebarKolom() {
+        for (int i = 0; i < tbl.getColumnCount(); i++) {
+            setColumnWidth(i);
+
+        }
     }
 
     /**
@@ -43,14 +87,42 @@ public class Data extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         btnsimpan.setText("Simpan");
+        btnsimpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnsimpanActionPerformed(evt);
+            }
+        });
 
         btnubah.setText("Ubah");
+        btnubah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnubahActionPerformed(evt);
+            }
+        });
 
         btnhapus.setText("Hapus");
+        btnhapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnhapusActionPerformed(evt);
+            }
+        });
 
         btnbatal.setText("Batal");
+        btnbatal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbatalActionPerformed(evt);
+            }
+        });
 
+        btnkeluar.setBackground(new java.awt.Color(255, 51, 102));
+        btnkeluar.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
+        btnkeluar.setForeground(new java.awt.Color(255, 255, 255));
         btnkeluar.setText("Keluar");
+        btnkeluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnkeluarActionPerformed(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(255, 204, 51));
 
@@ -85,6 +157,11 @@ public class Data extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tbl.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tbl);
 
         jLabel2.setText("Nama Pizza");
@@ -148,6 +225,50 @@ public class Data extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnsimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsimpanActionPerformed
+        try {
+            model.Simpan(this);
+        } catch (SQLException ex) {
+            Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnsimpanActionPerformed
+
+    private void btnubahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnubahActionPerformed
+        try {
+            model.Ubah(this);
+        } catch (SQLException ex) {
+            Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnubahActionPerformed
+
+    private void btnhapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnhapusActionPerformed
+        try {
+            model.Hapus(this);
+        } catch (SQLException ex) {
+            Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnhapusActionPerformed
+
+    private void btnbatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbatalActionPerformed
+        try {
+            model.Batal(this);
+        } catch (SQLException ex) {
+            Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnbatalActionPerformed
+
+    private void btnkeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnkeluarActionPerformed
+        dispose();
+    }//GEN-LAST:event_btnkeluarActionPerformed
+
+    private void tblMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMouseClicked
+        try {
+            model.KlikTable(this);
+        } catch (SQLException ex) {
+            Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_tblMouseClicked
+    ModelData model = new ModelData();
     /**
      * @param args the command line arguments
      */
@@ -178,7 +299,11 @@ public class Data extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Data().setVisible(true);
+                try {
+                    new Data().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
