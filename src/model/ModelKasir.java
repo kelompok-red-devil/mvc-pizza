@@ -129,7 +129,7 @@ public class ModelKasir implements ControllerKasir {
 
     }
     
-    public void TampilComboBarang(Kasir kasir) throws SQLException {
+    public void TampilNamaPizza(Kasir kasir) throws SQLException {
         try {
             Connection con = Koneksi.getCon();
             String sql = "select * from data";
