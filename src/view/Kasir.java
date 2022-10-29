@@ -4,17 +4,44 @@
  */
 package view;
 
+import java.awt.Component;
+import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import model.ModelKasir;
+
 /**
  *
  * @author lotso
  */
 public class Kasir extends javax.swing.JFrame {
 
+    public DefaultTableModel tblmodel;
+    String header[] = {"Nama Pizza", "Harga Pizza", "Topping", "Jumlah harga", "Total harga", "Kembalian"};
+
+    NumberFormat nf = NumberFormat.getNumberInstance(new Locale("in", "ID"));
+
     /**
      * Creates new form Kasir
      */
-    public Kasir() {
+    public Kasir() throws SQLException {
         initComponents();
+        initComponents();
+        tblmodel = new DefaultTableModel(null, header);
+        tbl.setModel(tblmodel);
+        tbl.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        model.TampilNamaPizza(this);
+        model.Tampil(this);
+        model.Batal(this);
+        setLebarKolom();
     }
 
     /**
@@ -62,6 +89,11 @@ public class Kasir extends javax.swing.JFrame {
         btnkeluar.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         btnkeluar.setForeground(new java.awt.Color(255, 255, 255));
         btnkeluar.setText("Keluar");
+        btnkeluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnkeluarActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
@@ -70,6 +102,11 @@ public class Kasir extends javax.swing.JFrame {
         btnhapus.setBackground(new java.awt.Color(102, 255, 102));
         btnhapus.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         btnhapus.setText("Batal");
+        btnhapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnhapusActionPerformed(evt);
+            }
+        });
 
         cbkeju.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         cbkeju.setForeground(new java.awt.Color(255, 255, 255));
@@ -78,6 +115,11 @@ public class Kasir extends javax.swing.JFrame {
         btnsimpan.setBackground(new java.awt.Color(255, 204, 51));
         btnsimpan.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         btnsimpan.setText("Simpan");
+        btnsimpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnsimpanActionPerformed(evt);
+            }
+        });
 
         cbsosis.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         cbsosis.setForeground(new java.awt.Color(255, 255, 255));
@@ -86,6 +128,11 @@ public class Kasir extends javax.swing.JFrame {
         btnkembalian.setBackground(new java.awt.Color(204, 255, 51));
         btnkembalian.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         btnkembalian.setText("Hitung Kembalian");
+        btnkembalian.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnkembalianActionPerformed(evt);
+            }
+        });
 
         cbdaging.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         cbdaging.setForeground(new java.awt.Color(255, 255, 255));
@@ -108,6 +155,11 @@ public class Kasir extends javax.swing.JFrame {
         jLabel2.setText("Nama Pizza");
 
         cmbnm.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PILIH MENU PIZZA" }));
+        cmbnm.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbnmItemStateChanged(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -116,6 +168,11 @@ public class Kasir extends javax.swing.JFrame {
         btnjml.setBackground(new java.awt.Color(0, 255, 204));
         btnjml.setFont(new java.awt.Font("Liberation Sans", 1, 15)); // NOI18N
         btnjml.setText("Hitung Jumlah Harga");
+        btnjml.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnjmlActionPerformed(evt);
+            }
+        });
 
         tbl.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -128,6 +185,11 @@ public class Kasir extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tbl.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tbl);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -241,7 +303,118 @@ public class Kasir extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnjmlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnjmlActionPerformed
+        int hasil = 0;
+        hasil = Integer.parseInt(txtharga.getText().replace(".", ""));
+        if (cbkeju.isSelected()) {
+            hasil = Integer.parseInt(txtharga.getText().replace(".", "")) + 5000;
+        }
+        if (cbsosis.isSelected()) {
+            hasil = Integer.parseInt(txtharga.getText().replace(".", "")) + 8000;
+        }
+        if (cbdaging.isSelected()) {
+            hasil = Integer.parseInt(txtharga.getText().replace(".", "")) + 10000;
+        }
+        if (cbkeju.isSelected() && cbsosis.isSelected()) {
+            hasil = Integer.parseInt(txtharga.getText().replace(".", "")) + 13000;
+        }
+        if (cbkeju.isSelected() && cbdaging.isSelected()) {
+            hasil = Integer.parseInt(txtharga.getText().replace(".", "")) + 15000;
+        }
+        if (cbsosis.isSelected() && cbdaging.isSelected()) {
+            hasil = Integer.parseInt(txtharga.getText().replace(".", "")) + 18000;
+        }
+        if (cbkeju.isSelected() && cbdaging.isSelected() && cbsosis.isSelected()) {
+            hasil = Integer.parseInt(txtharga.getText().replace(".", "")) + 23000;
+        }
+        txtjml.setText(nf.format(hasil));
+
+    }//GEN-LAST:event_btnjmlActionPerformed
+
+    private void btnkembalianActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnkembalianActionPerformed
+        int jharga, bayar, hasil = 0;
+        jharga = Integer.parseInt(txtjml.getText().replace(".", ""));
+        bayar = Integer.parseInt(txtbayar.getText().replace(".", ""));
+        if (jharga > bayar) {
+            JOptionPane.showMessageDialog(null, "Uang anda tidak cukup");
+            txtkembalian.setText("");
+        } else if (jharga == bayar) {
+            JOptionPane.showMessageDialog(null, "Uang anda pas");
+            txtkembalian.setText(nf.format(hasil));;
+        } //       hasil = bayar - jharga;
+        else {
+            hasil = bayar - jharga;
+            JOptionPane.showMessageDialog(null, "Uang kembali " + hasil);
+            txtkembalian.setText(nf.format(hasil));
+        }
+    }//GEN-LAST:event_btnkembalianActionPerformed
+
+    private void cmbnmItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbnmItemStateChanged
+        if (cmbnm.getSelectedIndex() > 0) {
+            try {
+                model.TampilHarga(this);
+            } catch (Exception e) {
+                Logger.getLogger(Kasir.class.getName()).log(Level.SEVERE, null, e);
+            }
+        }
+    }//GEN-LAST:event_cmbnmItemStateChanged
+
+    private void btnsimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsimpanActionPerformed
+        try {
+            model.Simpan(this);
+        } catch (SQLException ex) {
+            Logger.getLogger(Kasir.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnsimpanActionPerformed
+
+    private void btnhapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnhapusActionPerformed
+        try {
+            model.Simpan(this);
+        } catch (SQLException ex) {
+            Logger.getLogger(Kasir.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnhapusActionPerformed
+
+    private void btnkeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnkeluarActionPerformed
+        dispose();
+    }//GEN-LAST:event_btnkeluarActionPerformed
+
+    private void tblMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMouseClicked
+        try {
+            model.KlikTable(this);
+        } catch (SQLException ex) {
+            Logger.getLogger(Kasir.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_tblMouseClicked
+    ModelKasir model = new ModelKasir();
+
+    public void setColumnWidth(int kolom) {
+        DefaultTableColumnModel dtcm = (DefaultTableColumnModel) tbl.getColumnModel();
+        TableColumn kolomtabel = dtcm.getColumn(kolom);
+        int lebar = 0, margin = 10, a;
+        TableCellRenderer renderer = kolomtabel.getHeaderRenderer();
+        if (renderer == null) {
+            renderer = tbl.getTableHeader().getDefaultRenderer();
+        }
+        Component komponen = renderer.getTableCellRendererComponent(tbl, kolomtabel.getHeaderRenderer(), false, false, 0, 0);
+        for (a = 0; a < tbl.getRowCount(); a++) {
+            komponen = renderer.getTableCellRendererComponent(tbl, tbl.getValueAt(a, kolom), false, false, a, kolom);
+            int lebarkolom = komponen.getPreferredSize().width;
+            lebar = Math.max(lebar, lebarkolom);
+        }
+        lebar = lebar + margin;
+        kolomtabel.setPreferredWidth(lebar);
+    }
+
+    public void setLebarKolom() {
+        for (int i = 0; i < tbl.getColumnCount(); i++) {
+            setColumnWidth(i);
+
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -273,7 +446,11 @@ public class Kasir extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Kasir().setVisible(true);
+                try {
+                    new Kasir().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Kasir.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

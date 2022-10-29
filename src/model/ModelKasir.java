@@ -20,10 +20,10 @@ import javax.swing.JOptionPane;
  * @author lotso
  */
 public class ModelKasir implements ControllerKasir {
-
+String cb;
     @Override
     public void Simpan(Kasir kasir) throws SQLException {
-        String cb = "Tidak memilih topping";
+        cb = "Tidak memilih topping";
 
         if (kasir.cbkeju.isSelected()) {
             cb = "Mozarella Cheese";
